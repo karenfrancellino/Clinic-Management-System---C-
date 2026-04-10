@@ -7,269 +7,190 @@
 #include <sstream>
 #include <regex>
 
+// ==================== CLASSE BASE ====================
+class Persona {
+protected:
+    std::string nombre, apellidos, domicilio, localidad, postal, telefono, dni;
+    std::string fechaNacimiento;
 
-using namespace std;
+public:
+    Persona(const std::string& nombre, const std::string& apellidos,
+            const std::string& domicilio, const std::string& localidad,
+            const std::string& postal, const std::string& telefono,
+            const std::string& dni, const std::string& fecha)
+        : nombre(nombre), apellidos(apellidos), domicilio(domicilio),
+          localidad(localidad), postal(postal), telefono(telefono),
+          dni(dni), fechaNacimiento(fecha) {}
 
-class Persona{
-    protected:
-    string Nombre, Apellidos, Domicilio, Localidad, Postal, Telefono, DNI;
-    string fechaNacimiento;
-    
-    public:
-    Persona(string nombre, string apellidos, string domicilio, string localidad, string postal, string telefono, string dni, string fecha) 
-        : Nombre(nombre), Apellidos(apellidos), Domicilio(domicilio), Localidad(localidad), Postal(postal), Telefono(telefono), DNI(dni), fechaNacimiento(fecha){}
+    // Getters
+    std::string getNombre() const { return nombre; }
+    std::string getApellidos() const { return apellidos; }
+    std::string getDomicilio() const { return domicilio; }
+    std::string getLocalidad() const { return localidad; }
+    std::string getPostal() const { return postal; }
+    std::string getTelefono() const { return telefono; }
+    std::string getDNI() const { return dni; }
+    std::string getFechaNacimiento() const { return fechaNacimiento; }
 
-    string getFechaNacimiento() const {
-        return fechaNacimiento;
-    }
-
-    string getNombre() const {
-        return Nombre;
-    }
-    string getApellidos() const {
-        return Apellidos;
-    }
-    string getDomicilio() const {
-        return Domicilio;
-    }
-    string getLocalidad() const {
-        return Localidad;
-    }
-    string getPostal() const {
-        return Postal;
-    }
-    string getTelefono() const {
-        return Telefono;
-    }
-    string getDNI() const {
-        return DNI;
-    }
-   
-    void setNombre(string nombre){
-        Nombre = nombre;
-    }
-    void setApellidos(string apellidos){
-        Apellidos = apellidos;
-    }
-    void setDomicilio(string domicilio){
-        Domicilio = domicilio;
-    }
-    void setLocalidad(string localidad){
-        Localidad = localidad;
-    }
-    void setPostal(string postal){
-        Postal = postal;
-    }
-    void setTelefono(string telefono){
-        Telefono = telefono;
-    }
-     void setDNI(string dni){
-        DNI = dni;
-    }
-   void setFechaNacimiento(string fecha) {
-        fechaNacimiento = fecha;
-}
+    // Setters
+    void setNombre(const std::string& valor) { nombre = valor; }
+    void setApellidos(const std::string& valor) { apellidos = valor; }
+    void setDomicilio(const std::string& valor) { domicilio = valor; }
+    void setLocalidad(const std::string& valor) { localidad = valor; }
+    void setPostal(const std::string& valor) { postal = valor; }
+    void setTelefono(const std::string& valor) { telefono = valor; }
+    void setDNI(const std::string& valor) { dni = valor; }
+    void setFechaNacimiento(const std::string& valor) { fechaNacimiento = valor; }
 };
 
-
+// ==================== PACIENTE ====================
 class Paciente : public Persona {
 public:
-   Paciente(string nombre, string apellidos, string dni, string fecha, string domicilio, string localidad, string postal, string telefono)
-    : Persona(nombre, apellidos, domicilio, localidad, postal, telefono, dni, fecha) {}
+    Paciente(const std::string& nombre, const std::string& apellidos,
+             const std::string& dni, const std::string& fecha,
+             const std::string& domicilio, const std::string& localidad,
+             const std::string& postal, const std::string& telefono)
+        : Persona(nombre, apellidos, domicilio, localidad, postal, telefono, dni, fecha) {}
 };
 
+// ==================== EMPLEADO ====================
+class Empleado : public Persona {
+private:
+    std::string departamento;
+    std::string categoria;
 
+public:
+    Empleado(const std::string& nombre, const std::string& apellidos,
+             const std::string& dni, const std::string& fecha,
+             const std::string& domicilio, const std::string& localidad,
+             const std::string& postal, const std::string& telefono,
+             const std::string& departamento, const std::string& categoria)
+        : Persona(nombre, apellidos, domicilio, localidad, postal, telefono, dni, fecha),
+          departamento(departamento), categoria(categoria) {}
 
-class Empleado : public Persona{
-    private:
-        string Departamento;
-        string Categoria;
+    std::string getDepartamento() const { return departamento; }
+    std::string getCategoria() const { return categoria; }
 
-    public:
-    Empleado(string nombre, string apellidos, string dni, string fecha, string domicilio, string localidad, string postal, string telefono, string departamento, string categoria)
-    : Persona(nombre, apellidos, domicilio, localidad, postal, telefono, dni, fecha), Departamento(departamento), Categoria(categoria) {}
-
-    string getDepartamento() const { return Departamento; }
-    string getCategoria() const { return Categoria; }
-
-    void setDepartamento(string departamento){
-        Departamento = departamento;
-    }    
-    void setCategoria(string categoria){
-        Categoria = categoria;
-    }
+    void setDepartamento(const std::string& valor) { departamento = valor; }
+    void setCategoria(const std::string& valor) { categoria = valor; }
 };
 
-bool isStringVaziaOuEspacos(const string& str) {
-    return str.empty() || str.find_first_not_of(' ') == string::npos;
+// ==================== VALIDACIONES ====================
+bool isVacio(const std::string& str) {
+    return str.empty() || str.find_first_not_of(' ') == std::string::npos;
 }
 
 bool validarFecha(const std::string& fecha) {
-    std::regex formatoFecha(R"(^\d{2}/\d{2}/\d{4}$)");
-    if (!std::regex_match(fecha, formatoFecha)) {
-        return false;
-    }
+    std::regex formato(R"(^\d{2}/\d{2}/\d{4}$)");
+    if (!std::regex_match(fecha, formato)) return false;
 
-    int dia, mes, anyo;
-    std::sscanf(fecha.c_str(), "%d/%d/%d", &dia, &mes, &anyo);
+    int d, m, y;
+    std::sscanf(fecha.c_str(), "%d/%d/%d", &d, &m, &y);
 
-    if (mes < 1 || mes > 12 || dia < 1 || dia > 31) {
-        return false;
-    }
+    if (m < 1 || m > 12 || d < 1 || d > 31) return false;
+    if ((m == 4 || m == 6 || m == 9 || m == 11) && d > 30) return false;
 
-    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
-        return false;
-    }
-    if (mes == 2) {
-        bool anyoBissexto = (anyo % 4 == 0 && (anyo % 100 != 0 || anyo % 400 == 0));
-        if (dia > (anyoBissexto ? 29 : 28)) {
-            return false;
-        }
+    if (m == 2) {
+        bool bissexto = (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0));
+        if (d > (bissexto ? 29 : 28)) return false;
     }
 
     return true;
 }
 
-void lerDadosComuns(string& nombre, string& apellidos, string& dni, string& fecha, string& domicilio, string& postal, string& localidad, string& telefono) {
-      do {
-        cout << "Introduzca el nombre: " << endl;
-        getline(cin, nombre);
-        if (isStringVaziaOuEspacos(nombre)) {
-            cout << "Nombre no puede estar vacio. Introduzca de nuevo: " << endl;
-        }
-    } while (isStringVaziaOuEspacos(nombre));
+// ==================== INPUT ====================
+void leerDatosComunes(std::string& nombre, std::string& apellidos,
+                     std::string& dni, std::string& fecha,
+                     std::string& domicilio, std::string& postal,
+                     std::string& localidad, std::string& telefono) {
 
     do {
-        cout << "Introduzca los apellidos: " << endl;
-        getline(cin, apellidos);
-        if (isStringVaziaOuEspacos(apellidos)) {
-            cout << "Apellidos no pueden estar vacios. Introduzca de nuevo: " << endl;
-        }
-    } while (isStringVaziaOuEspacos(apellidos));
+        std::cout << "Nombre: ";
+        std::getline(std::cin, nombre);
+    } while (isVacio(nombre));
 
     do {
-        cout << "Introduzca el DNI o NIE: " << endl;
-        getline(cin, dni);
-        if (isStringVaziaOuEspacos(dni)) {
-            cout << "DNI no puede estar vacio. Introduzca de nuevo: " << endl;
-        }
-    } while (isStringVaziaOuEspacos(dni));
+        std::cout << "Apellidos: ";
+        std::getline(std::cin, apellidos);
+    } while (isVacio(apellidos));
 
     do {
-        cout << "Introduzca la fecha de nacimiento (en formato dd/mm/aaaa): " << endl;
-        getline(cin, fecha);
-        if (!validarFecha(fecha) || isStringVaziaOuEspacos(fecha)) {
-            cout << "Fecha de nacimiento invalida o vacia. Introduzca de nuevo en el formato dd/mm/aaaa: " << endl;
-        }
-    } while (!validarFecha(fecha) || isStringVaziaOuEspacos(fecha));
+        std::cout << "DNI/NIE: ";
+        std::getline(std::cin, dni);
+    } while (isVacio(dni));
 
     do {
-        cout << "Introduzca el domicilio: " << endl;
-        getline(cin, domicilio);
-        if (isStringVaziaOuEspacos(domicilio)) {
-            cout << "Domicilio no puede estar vacio. Introduzca de nuevo: " << endl;
-        }
-    } while (isStringVaziaOuEspacos(domicilio));
+        std::cout << "Fecha (dd/mm/yyyy): ";
+        std::getline(std::cin, fecha);
+    } while (!validarFecha(fecha));
 
     do {
-        cout << "Introduzca el codigo postal: " << endl;
-        getline(cin, postal);
-        if (isStringVaziaOuEspacos(postal)) {
-            cout << "Codigo postal no puede estar vacio. Introduzca de nuevo: " << endl;
-        }
-    } while (isStringVaziaOuEspacos(postal));
+        std::cout << "Domicilio: ";
+        std::getline(std::cin, domicilio);
+    } while (isVacio(domicilio));
 
     do {
-        cout << "Introduzca la localidad: " << endl;
-        getline(cin, localidad);
-        if (isStringVaziaOuEspacos(localidad)) {
-            cout << "Localidad no puede estar vacia. Introduzca de nuevo: " << endl;
-        }
-    } while (isStringVaziaOuEspacos(localidad));
+        std::cout << "Código postal: ";
+        std::getline(std::cin, postal);
+    } while (isVacio(postal));
 
     do {
-        cout << "Introduzca el numero de telefono: " << endl;
-        getline(cin, telefono);
-        if (isStringVaziaOuEspacos(telefono)) {
-            cout << "Telefono no puede estar vacio. Introduzca de nuevo: " << endl;
-        }
-    } while (isStringVaziaOuEspacos(telefono));
+        std::cout << "Localidad: ";
+        std::getline(std::cin, localidad);
+    } while (isVacio(localidad));
+
+    do {
+        std::cout << "Teléfono: ";
+        std::getline(std::cin, telefono);
+    } while (isVacio(telefono));
 }
 
-void lerDadosFuncionario(string& departamento, string& categoria) {
-    cout << "Introduzca el departamento del empleado:" << endl;
-    getline(cin, departamento);
+void leerDatosEmpleado(std::string& departamento, std::string& categoria) {
+    std::cout << "Departamento: ";
+    std::getline(std::cin, departamento);
 
-    cout << "Introduzca la categoría profesional del empleado: " << endl;
-    getline(cin, categoria);
+    std::cout << "Categoría: ";
+    std::getline(std::cin, categoria);
 }
 
-
-
-int main(){
-     std::time_t tempo_atual = std::time(nullptr); 
-    std::tm* tempo_local = std::localtime(&tempo_atual); 
-    std::ostringstream oss;
-    oss << std::put_time(tempo_local, "%d/%m/%Y");
-    std::string data_formatada = oss.str();
-
-    string nombre, apellidos, domicilio, localidad, postal, telefono, dni, fecha, categoria, departamento;
+// ==================== MAIN ====================
+int main() {
     int opcion;
 
-    cout << "Bienvenido a Clinica Radiológica Aranguren. " "\n";
-    cout << "Pulse 1 para introducir los datos de un paciente o pulse 2 para introducir los datos de un empleado: " "\n";
-    cin >> opcion;
+    std::cout << "=== Clinica Radiologica ===\n";
+    std::cout << "1. Paciente\n2. Empleado\n";
+    std::cin >> opcion;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    std::string nombre, apellidos, domicilio, localidad, postal, telefono, dni, fecha;
+    std::string departamento, categoria;
 
-    if (opcion == 1){//paciente
-        
-        lerDadosComuns(nombre, apellidos, dni, fecha, domicilio, postal, localidad, telefono);
+    if (opcion == 1) {
+        leerDatosComunes(nombre, apellidos, dni, fecha, domicilio, postal, localidad, telefono);
 
-   Paciente paciente(nombre, apellidos, dni, fecha, domicilio, localidad, postal, telefono);
+        Paciente p(nombre, apellidos, dni, fecha, domicilio, localidad, postal, telefono);
 
-    ofstream archivo("pacientes.txt", ios::app);
-   if(archivo.is_open()){
-    archivo << "Paciente con DNI/NIE: " << paciente.getDNI() << "\n";
-    archivo << "Nombre y apellidos: " << paciente.getNombre() << " " << paciente.getApellidos() << "\n";
-    archivo << "Fecha de nacimiento: " << paciente.getFechaNacimiento() << "\n";
-    archivo << "Domicilio: " << paciente.getDomicilio() << "\n";
-    archivo << "C. P.: " << paciente.getPostal() << "; Localidad: " << paciente.getLocalidad() << "\n";
-    archivo << "Nº Teléfono: " << paciente.getTelefono() << "\n";
-    archivo << "_________________________________________________\n";
-    archivo.close();
-    cout << "Los datos del paciente se han almacenado correctamente en el archivo 'pacientes.txt'." << endl;
-} else {
-    cout << "Error al abrir el archivo 'pacientes.txt'." << endl;
-}
-}else if (opcion == 2){ //empleado
-       
-        lerDadosComuns(nombre, apellidos, dni, fecha, domicilio, postal, localidad, telefono);
+        std::ofstream file("pacientes.txt", std::ios::app);
+        if (file) {
+            file << p.getNombre() << " " << p.getApellidos() << "\n";
+            std::cout << "Paciente guardado correctamente\n";
+        }
 
-        lerDadosFuncionario(departamento, categoria);
+    } else if (opcion == 2) {
+        leerDatosComunes(nombre, apellidos, dni, fecha, domicilio, postal, localidad, telefono);
+        leerDatosEmpleado(departamento, categoria);
 
+        Empleado e(nombre, apellidos, dni, fecha, domicilio, localidad, postal, telefono, departamento, categoria);
 
-    Empleado empleado(nombre, apellidos, dni, fecha, domicilio, localidad, postal, telefono, departamento, categoria);
+        std::ofstream file("empleados.txt", std::ios::app);
+        if (file) {
+            file << e.getNombre() << " " << e.getApellidos() << "\n";
+            std::cout << "Empleado guardado correctamente\n";
+        }
 
+    } else {
+        std::cout << "Opcion invalida\n";
+    }
 
-    ofstream archivo("empleados.txt", ios::app);
-   if(archivo.is_open()){
-    archivo << "Empleado con DNI/NIE: " << empleado.getDNI() << "\n";
-    archivo << "Nombre y apellidos: " << empleado.getNombre() << " " << empleado.getApellidos() << "\n";
-    archivo << "Fecha de nacimiento: " << empleado.getFechaNacimiento() << "\n";
-    archivo << "Domicilio: " << empleado.getDomicilio() << "\n";
-    archivo << "C. P.: " << empleado.getPostal() << "; Localidad: " << empleado.getLocalidad() << "\n";
-    archivo << "Nº Teléfono: " << empleado.getTelefono() << "\n";
-    archivo << "Departamento: " << empleado.getDepartamento() << "\n";
-    archivo << "Categoria profesional: " << empleado.getCategoria() << "\n";
-    archivo << "_________________________________________________\n";
-    archivo.close();
-    cout << "Los datos del empleado se han almacenado correctamente en el archivo 'empleados.txt'." << endl;
-} else {
-    cout << "Error al abrir el archivo 'empleados.txt'." << endl;
-}
-} else { 
-    cout << "Opcion no valida. Intente una vez mas. " << endl;
-}
-return 0;
+    return 0;
 }
